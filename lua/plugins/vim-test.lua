@@ -14,6 +14,7 @@ return {
     -- Configure terminal behavior
     vim.g["test#neovim#term_position"] = "botright 15" -- Bottom split, 15 lines high
     vim.g["test#neovim#preserve_screen"] = 1 -- Keep terminal open after test finishes
+    vim.g["test#neovim#start_normal"] = 1 -- Start in normal mode, not terminal mode
 
     -- Elixir/Mix test configuration
     vim.g["test#elixir#runner"] = "mixtest"
@@ -25,5 +26,24 @@ return {
 
     -- Optional: Make test output more readable
     vim.g["test#preserve_screen"] = 1
+
+    -- Auto-scroll to bottom of test output when tests complete
+    vim.api.nvim_create_autocmd("TermClose", {
+      pattern = "*",
+      callback = function()
+        vim.cmd("normal! G") -- Jump to bottom of output
+      end,
+    })
+
+    -- Make it easy to close the test terminal
+    vim.api.nvim_create_autocmd("TermOpen", {
+      pattern = "*",
+      callback = function()
+        -- Set local keymap to close terminal with 'q' in normal mode
+        vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = true, silent = true })
+        -- Easy escape from terminal mode
+        vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { buffer = true, silent = true })
+      end,
+    })
   end,
 }
