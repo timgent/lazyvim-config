@@ -8,13 +8,11 @@ return {
     { "<leader>Tv", "<cmd>TestVisit<cr>", desc = "Visit Test File" },
   },
   config = function()
-    -- Use neovim terminal strategy for full console output
-    vim.g["test#strategy"] = "neovim"
+    -- Use neovim_sticky strategy: keeps terminal open and reuses it for subsequent runs
+    vim.g["test#strategy"] = "neovim_sticky"
 
     -- Configure terminal behavior
     vim.g["test#neovim#term_position"] = "botright 15" -- Bottom split, 15 lines high
-    vim.g["test#neovim#preserve_screen"] = 1 -- Keep terminal open after test finishes
-    vim.g["test#neovim#start_normal"] = 1 -- Start in normal mode, not terminal mode
 
     -- Elixir/Mix test configuration
     vim.g["test#elixir#runner"] = "mixtest"
@@ -24,18 +22,7 @@ return {
       all = "--trace", -- Verbose output showing IO.puts
     }
 
-    -- Optional: Make test output more readable
-    vim.g["test#preserve_screen"] = 1
-
-    -- Auto-scroll to bottom of test output when tests complete
-    vim.api.nvim_create_autocmd("TermClose", {
-      pattern = "*",
-      callback = function()
-        vim.cmd("normal! G") -- Jump to bottom of output
-      end,
-    })
-
-    -- Make it easy to close the test terminal
+    -- Make it easy to work with test terminal
     vim.api.nvim_create_autocmd("TermOpen", {
       pattern = "*",
       callback = function()
